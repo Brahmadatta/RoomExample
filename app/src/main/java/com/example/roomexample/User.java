@@ -19,10 +19,13 @@ public class User {
     @PrimaryKey(autoGenerate = true)
     Integer id;
 
-    public User(String name, String place, String country) {
+    /*public User(String name, String place, String country) {
         this.name = name;
         this.place = place;
         this.country = country;
+    }*/
+
+    public User() {
     }
 
     public String getName() {

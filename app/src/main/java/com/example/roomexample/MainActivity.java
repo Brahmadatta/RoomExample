@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -18,8 +20,10 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     EditText username,place,country;
     Button add;
-    AsyncTask<List<User>,Void,List<User>> mAddTask;
+    AsyncTask<List<User>,Void,List<User>> addTask;
+    AsyncTask<Void,Void,List<User>> retrievTask;
     UserDatabase mUserDatabase;
+    List<User> mUserList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,17 +42,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-    public void onUserAdd(){
-        if (validateFields()){
-
-            User user = new User(username.getText().toString(),place.getText().toString(),country.getText().toString());
-            new InsertUsersTask().execute();
+    private void loadData() {
+        UserDao userDao = UserDatabase.getInstance(getApplication()).mUserDao();
+        if (userDao.getAllUsers().isEmpty()){
+            Toast.makeText(this, "Empty Data", Toast.LENGTH_SHORT).show();
+        }else {
+            retrieveFromDatabase();
         }
     }
+
+    private void retrieveFromDatabase() {
+        retrievTask = new RetrieveUser();
+        retrievTask.execute();
+    }
+
+
 
     private boolean validateFields() {
 
@@ -65,10 +73,22 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private class InsertUsersTask extends AsyncTask<List<User>,Void,List<User>> {
+    public void onUserAdd(View view) {
+        if (validateFields()){
 
-        private WeakReference<MainActivity> mWeakReference;
-        private User mUser;
+            //User user = new User(username.getText().toString(),place.getText().toString(),country.getText().toString());
+            User user = new User();
+            user.setName(username.getText().toString());
+            user.setPlace(place.getText().toString());
+            user.setCountry(country.getText().toString());
+            mUserList.add(user);
+
+            addTask = new InsertUsersTask();
+            addTask.execute(mUserList);
+        }
+    }
+
+    private class InsertUsersTask extends AsyncTask<List<User>,Void,List<User>> {
 
         @Override
         protected List<User> doInBackground(List<User>... lists) {
@@ -97,8 +117,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setListData(List<User> users) {
+        UserAdapter userAdapter = new UserAdapter(users,this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter();
+        mRecyclerView.setAdapter(userAdapter);
+    }
+
+
+    private class RetrieveUser extends AsyncTask<Void,Void,List<User>>{
+
+        @Override
+        protected List<User> doInBackground(Void... voids) {
+            return UserDatabase.getInstance(MainActivity.this).mUserDao().getAllUsers();
+        }
+
+        @Override
+        protected void onPostExecute(List<User> users) {
+            super.onPostExecute(users);
+            setListData(users);
+        }
     }
 }

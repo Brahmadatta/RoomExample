@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
                     user.setCountry(cntry);
 
                     ArrayList<User> newList = new ArrayList<User>();
-                    //List<Long> result = UserDatabase.getInstance(getApplicationContext()).mUserDao().insertAll(user);
-                    List<Long> result = UserDatabase.getInstance(getApplicationContext()).mUserDao().insertAll(newList.toArray(new User[0]));
+                    List<Long> result = UserDatabase.getInstance(getApplicationContext()).mUserDao().insertAll(user);
+                    //List<Long> result = UserDatabase.getInstance(getApplicationContext()).mUserDao().insertAll(newList.toArray(new User[0]));
 
                     int i = 0;
                     while (i < newList.size()){
@@ -149,15 +149,11 @@ public class MainActivity extends AppCompatActivity {
                 protected void onPostExecute(List<User> users) {
                     super.onPostExecute(users);
                     Toast.makeText(MainActivity.this, "Inserted", Toast.LENGTH_SHORT).show();
-                    mHandler = new Handler();
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.e("data",""+users.size());
-                        }
-                    },5000);
 
-                    startActivity(new Intent(MainActivity.this,GetUsersActivity.class));
+                    retrievTask = new RetrieveUser();
+                    retrievTask.execute();
+
+                    //startActivity(new Intent(MainActivity.this,GetUsersActivity.class));
                 }
             }
 
@@ -175,17 +171,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        /*private class RetrieveUser extends AsyncTask<Void, Void, List<User>> {
+        private class RetrieveUser extends AsyncTask<Void, Void, List<User>> {
 
             @Override
             protected List<User> doInBackground(Void... voids) {
-                return UserDatabase.getInstance(MainActivity.this).mUserDao().getAllUsers();
+                List<User> userList = UserDatabase.getInstance(getApplicationContext())
+                        .mUserDao().getAllUsers();
+                return userList;
             }
 
             @Override
             protected void onPostExecute(List<User> users) {
                 super.onPostExecute(users);
-                setListData(users);
+                UserAdapter adapter = new UserAdapter(users,MainActivity.this);
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                mRecyclerView.setHasFixedSize(true);
+                mRecyclerView.setAdapter(adapter);
             }
-        }*/
+        }
     }

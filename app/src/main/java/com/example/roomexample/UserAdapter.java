@@ -31,6 +31,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
 
+        //User user = mUserList.get(position);
         holder.username.setText(mUserList.get(position).getName());
         holder.place.setText(mUserList.get(position).getPlace());
         holder.country.setText(mUserList.get(position).getCountry());
@@ -51,7 +52,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
             username = itemView.findViewById(R.id.name);
             place = itemView.findViewById(R.id.place);
-            country = itemView.findViewById(R.id.country);
+            country = itemView.findViewById(R.id.location);
 
         }
     }

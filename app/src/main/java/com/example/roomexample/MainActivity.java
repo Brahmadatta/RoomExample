@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     UserDatabase mUserDatabase;
     List<User> mUserList;
     Handler mHandler;
+    PassData mPassData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +152,10 @@ public class MainActivity extends AppCompatActivity {
                     super.onPostExecute(users);
                     Toast.makeText(MainActivity.this, "Inserted", Toast.LENGTH_SHORT).show();
 
-                    retrievTask = new RetrieveUser();
-                    retrievTask.execute();
+                    /*retrievTask = new RetrieveUser();
+                    retrievTask.execute();*/
+
+                    mPassData.isDataAdded(true);
 
                     //startActivity(new Intent(MainActivity.this,GetUsersActivity.class));
                 }
@@ -188,5 +192,9 @@ public class MainActivity extends AppCompatActivity {
                 mRecyclerView.setHasFixedSize(true);
                 mRecyclerView.setAdapter(adapter);
             }
+        }
+
+        public void dataAdded(PassData passData){
+            this.mPassData = passData;
         }
     }
